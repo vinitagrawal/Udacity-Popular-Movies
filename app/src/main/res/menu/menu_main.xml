@@ -1,0 +1,21 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="me.vinitagrawal.popularmovies.MainActivityFragment">
+    <item
+        android:id="@+id/action_sort"
+        android:orderInCategory="100"
+        android:title="@string/action_sort_by"
+        android:icon="@drawable/ic_sort_white"
+        app:showAsAction="always">
+
+        <menu>
+            <item
+                android:id="@+id/sortPopular"
+                android:title="@string/action_sort_by_most_popular" />
+            <item
+                android:id="@+id/sortRating"
+                android:title="@string/action_sort_by_highest_rated" />
+        </menu>
+    </item>
+</menu>
