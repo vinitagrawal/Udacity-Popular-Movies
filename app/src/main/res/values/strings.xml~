@@ -13,4 +13,13 @@
     <string name="trailers_section_title">Trailers</string>
     <string name="reviews_section_title">Reviews</string>
 
+    <string-array name="sports_array">
+        <item>Shuttle Badminton</item>
+        <item>Tennis</item>
+        <item>FootBall</item>
+        <item>Basket Ball</item>
+        <item>Table Tennis</item>
+        <item>Chess</item>
+        <item>Hockey</item>
+    </string-array>
 </resources>

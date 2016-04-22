@@ -1,11 +1,14 @@
-    <GridView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="me.vinitagrawal.popularmovies.fragment.MainActivityFragment"
+    tools:showIn="@layout/content_main">
+
+    <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/gridView_movies"
-        android:numColumns="auto_fit"
-        android:verticalSpacing="2dp"
-        android:horizontalSpacing="2dp"
-        android:stretchMode="columnWidth"
-        tools:context=".fragment.MainActivityFragment"
-        tools:showIn="@layout/activity_main"/>
+        android:id="@+id/recyclerView_movies"
+        android:scrollbars="vertical"/>
+
+</FrameLayout>

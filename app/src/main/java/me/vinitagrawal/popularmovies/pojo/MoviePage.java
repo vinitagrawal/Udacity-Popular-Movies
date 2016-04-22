@@ -6,7 +6,7 @@ import java.util.List;
 public class MoviePage {
 
     private Integer page;
-    private List<Result> results = new ArrayList<Result>();
+    private List<Movie> results = new ArrayList<Movie>();
     private Integer total_results;
     private Integer total_pages;
 
@@ -33,7 +33,7 @@ public class MoviePage {
      * @return
      * The results
      */
-    public List<Result> getResults() {
+    public List<Movie> getResults() {
         return results;
     }
 
@@ -42,7 +42,7 @@ public class MoviePage {
      * @param results
      * The results
      */
-    public void setResults(List<Result> results) {
+    public void setResults(List<Movie> results) {
         this.results = results;
     }
 

@@ -1,7 +1,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context="me.vinitagrawal.popularmovies.MainActivityFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_sort"
         android:orderInCategory="100"
@@ -16,6 +14,9 @@
             <item
                 android:id="@+id/sortRating"
                 android:title="@string/action_sort_by_highest_rated" />
+            <item
+                android:id="@+id/sortFavourite"
+                android:title="@string/action_sort_by_favourite" />
         </menu>
     </item>
 </menu>
