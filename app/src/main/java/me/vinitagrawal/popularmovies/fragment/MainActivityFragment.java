@@ -1,6 +1,10 @@
 package me.vinitagrawal.popularmovies.fragment;
 
+import android.content.Context;
+import android.content.res.Configuration;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -14,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -22,6 +27,7 @@ import java.util.ArrayList;
 
 import me.vinitagrawal.popularmovies.BuildConfig;
 import me.vinitagrawal.popularmovies.R;
+import me.vinitagrawal.popularmovies.activity.MainActivity;
 import me.vinitagrawal.popularmovies.adapter.MovieAdapter;
 import me.vinitagrawal.popularmovies.data.MovieContract;
 import me.vinitagrawal.popularmovies.pojo.Movie;
@@ -41,8 +47,9 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     private static final int FAVORITE_LOADER = 0;
     private static final String SORT_BY_POPULARITY = "popular";
     private static final String SORT_BY_RATING = "top_rated";
-    private static final String SORT_BY_FAVORITES = "favorites";
+    public static final String SORT_BY_FAVORITES = "favorites";
     private static final String MOVIE_SAVEDINSTANCE_KEY = "movieArrayList";
+    public static String sortType;
 
     private RecyclerView mRecyclerView;
     private MovieAdapter movieAdapter;
@@ -67,8 +74,6 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     public static final int COL_ORIGINAL_TITLE = 5;
     public static final int COL_VOTE_AVERAGE = 6;
 
-    private String sortType;
-
     public MainActivityFragment() {
     }
 
@@ -82,8 +87,12 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView_movies);
         mRecyclerView.setHasFixedSize(true);
 
-        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getContext(), 2);
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        if(getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        }
+        else{
+            mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        }
 
         return rootView;
     }
@@ -92,17 +101,16 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     public void onActivityCreated(Bundle savedInstanceState) {
 
         // check if savedinstancestate exists and then fetch values from it
-        if(savedInstanceState==null || !savedInstanceState.containsKey(MOVIE_SAVEDINSTANCE_KEY)) {
+        if (savedInstanceState == null || !savedInstanceState.containsKey(MOVIE_SAVEDINSTANCE_KEY)) {
             movieAdapter = new MovieAdapter(getActivity(), movieArrayList);
             mRecyclerView.setAdapter(movieAdapter);
 
             //fetching movie list for the first time with popularity as the default sort order
             fetchMovies(SORT_BY_POPULARITY);
-        }
-        else {
-            movieArrayList = savedInstanceState.getParcelableArrayList(MOVIE_SAVEDINSTANCE_KEY);
-            movieAdapter = new MovieAdapter(getActivity(), movieArrayList);
-            mRecyclerView.setAdapter(movieAdapter);
+        } else {
+                movieArrayList = savedInstanceState.getParcelableArrayList(MOVIE_SAVEDINSTANCE_KEY);
+                movieAdapter = new MovieAdapter(getActivity(), movieArrayList);
+                mRecyclerView.setAdapter(movieAdapter);
         }
 
 
@@ -144,10 +152,23 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         outState.putParcelableArrayList(MOVIE_SAVEDINSTANCE_KEY, movieArrayList);
     }
 
+    // method to check if the internet is available
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null;
+    }
+
     // function to clear the recycler view when sort order is changes
     public void clearRecyclerView() {
         movieArrayList.clear();
         movieAdapter.notifyDataSetChanged();
+        Fragment fragment = getActivity().getSupportFragmentManager().findFragmentByTag(MainActivity.MOVIE_DETAIL_FRAGMENT_TAG);
+        if(fragment!=null)
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .remove(fragment)
+                    .commit();
     }
 
     /**
@@ -156,36 +177,41 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
      * @param sortKey the key to sort with
      */
     public void fetchMovies(String sortKey) {
+        if(isNetworkAvailable()) {
 
-        Gson gson = new GsonBuilder()
-                .setDateFormat("yyyy-mm-dd")
-                .create();
+            Gson gson = new GsonBuilder()
+                    .setDateFormat("yyyy-mm-dd")
+                    .create();
 
-        String MOVIE_DB_BASE_URL = "http://api.themoviedb.org/3/";
+            String MOVIE_DB_BASE_URL = "http://api.themoviedb.org/3/";
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(MOVIE_DB_BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .build();
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(MOVIE_DB_BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create(gson))
+                    .build();
 
-        MovieApiService service = retrofit.create(MovieApiService.class);
+            MovieApiService service = retrofit.create(MovieApiService.class);
 
-        Call<MoviePage> call = service.getMovieList(sortKey,BuildConfig.THE_MOVIEDB_API_KEY);
+            Call<MoviePage> call = service.getMovieList(sortKey, BuildConfig.THE_MOVIEDB_API_KEY);
 
-        call.enqueue(new Callback<MoviePage>() {
-            @Override
-            public void onResponse(Call<MoviePage> call, Response<MoviePage> response) {
-                if (response.body() != null) {
-                    movieArrayList.addAll(response.body().getResults());
-                    movieAdapter.notifyDataSetChanged();
+            call.enqueue(new Callback<MoviePage>() {
+                @Override
+                public void onResponse(Call<MoviePage> call, Response<MoviePage> response) {
+                    if (response.body() != null) {
+                        movieArrayList.addAll(response.body().getResults());
+                        movieAdapter.notifyDataSetChanged();
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<MoviePage> call, Throwable t) {
-                t.printStackTrace();
-            }
-        });
+                @Override
+                public void onFailure(Call<MoviePage> call, Throwable t) {
+                    t.printStackTrace();
+                }
+            });
+        }
+        else {
+            Toast.makeText(getActivity(), R.string.network_unavailable_string, Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override

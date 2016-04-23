@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.os.Environment;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -106,7 +105,7 @@ public class MovieDbOperations {
                     @Override
                     public void run() {
 
-                        File fileDir = new File(Environment.getExternalStorageDirectory().getPath() + SAVED_IMAGE_URL);
+                        File fileDir = new File(mContext.getExternalFilesDir(null) + SAVED_IMAGE_URL);
                         if(!fileDir.exists())
                             fileDir.mkdir();
                         File file = new File(fileDir,fileName);

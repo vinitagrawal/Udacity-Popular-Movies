@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -73,6 +72,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
     private ArrayList<Trailer> trailers = new ArrayList<>();
     private ArrayList<Review> reviews = new ArrayList<>();
     private String componentType;
+    private boolean dualPane;
 
     private TextView mMovieTitleView;
     private TextView mReleaseDateView;
@@ -128,7 +128,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
         setHasOptionsMenu(true);
         //reading parcel data from intent, to display the details of the movie selected on the movie list screen
         Bundle bundle = getArguments();
-        boolean dualPane = false;
+        dualPane = false;
         if(bundle!=null) {
             movie = bundle.getParcelable(DETAIL_MOVIE);
             dualPane = bundle.getBoolean(DUAL_PANE);
@@ -174,10 +174,10 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
                         .into(mBackdropImageView);
             }
             else {
-                Picasso.with(getContext()).load(new File(Environment.getExternalStorageDirectory().getPath() + SAVED_IMAGE_URL, movie.getPoster_path()))
+                Picasso.with(getContext()).load(new File(getActivity().getExternalFilesDir(null) + SAVED_IMAGE_URL, movie.getPoster_path()))
                         .into(mMoviePosterView);
 
-                Picasso.with(getContext()).load(new File(Environment.getExternalStorageDirectory().getPath() + SAVED_IMAGE_URL, movie.getBackdrop_path()))
+                Picasso.with(getContext()).load(new File(getActivity().getExternalFilesDir(null) + SAVED_IMAGE_URL, movie.getBackdrop_path()))
                         .placeholder(R.color.colorPrimary)
                         .into(mBackdropImageView);
             }
@@ -188,6 +188,9 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
                     if(movie.isFavorite()) {
                         mFavoredButton.setImageResource(R.drawable.ic_favorite_border);
                         movie.setIsFavorite(false);
+                        if(dualPane)
+                            if(MainActivityFragment.sortType.equals(MainActivityFragment.SORT_BY_FAVORITES))
+                                getActivity().getSupportFragmentManager().beginTransaction().remove(MovieDetailsFragment.this).commit();
                         removeMovieFromFavorites();
                     }
                     else {
@@ -405,7 +408,7 @@ public class MovieDetailsFragment extends Fragment implements LoaderManager.Load
                         Picasso.with(getContext()).load(String.format("%s%s%s", YOUTUBE_THUMBNAIL_IMAGE_URL, trailer.getKey(), YOUTUBE_THUMBNAIL_HQ_IMAGE))
                                 .into(trailerThumbnailView);
                     else
-                        Picasso.with(getContext()).load(new File(Environment.getExternalStorageDirectory().getPath() + SAVED_IMAGE_URL, trailer.getKey() + ".jpg"))
+                        Picasso.with(getContext()).load(new File(getActivity().getExternalFilesDir(null) + SAVED_IMAGE_URL, trailer.getKey() + ".jpg"))
                                 .into(trailerThumbnailView);
 
                     trailerPlayView.setOnClickListener(new View.OnClickListener() {

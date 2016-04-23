@@ -12,5 +12,7 @@
     <string name="action_share">Share</string>
     <string name="trailers_section_title">Trailers</string>
     <string name="reviews_section_title">Reviews</string>
+    <string name="network_unavailable_string">Network unavailable. Please check your internet connection</string>
+    <string name="permission_request_message">Media access is required to store movie\'s media files. Grant Access?</string>
 
 </resources>

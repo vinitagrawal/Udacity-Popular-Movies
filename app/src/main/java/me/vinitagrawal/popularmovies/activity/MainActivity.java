@@ -16,7 +16,7 @@ import me.vinitagrawal.popularmovies.pojo.Movie;
 public class MainActivity extends AppCompatActivity implements MovieAdapter.ItemClickCallback {
 
     private boolean mDualPane;
-    private static final String MOVIE_DETAIL_FRAGMENT_TAG = "movieDetailsTag";
+    public static final String MOVIE_DETAIL_FRAGMENT_TAG = "movieDetailsTag";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

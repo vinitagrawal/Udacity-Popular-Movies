@@ -2,7 +2,6 @@ package me.vinitagrawal.popularmovies.adapter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.Environment;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -63,7 +62,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
                     .placeholder(R.color.colorAccent)
                     .into(holder.posterView);
         else
-            Picasso.with(mContext).load(new File(Environment.getExternalStorageDirectory().getPath() + SAVED_IMAGE_URL, movie.getPoster_path()))
+            Picasso.with(mContext).load(new File(mContext.getExternalFilesDir(null) + SAVED_IMAGE_URL, movie.getPoster_path()))
                     .placeholder(R.color.colorAccent)
                     .into(holder.posterView);
 
